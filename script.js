@@ -209,7 +209,7 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("stroke-dasharray", "5, 5") 
     .attr("opacity", 0.7);
 
-  // 💡 [드래그 중] 실시간 직선거리와 점선을 렌더링하는 함수
+  // (드래그 중) 실시간 직선거리와 점선을 렌더링하는 함수
   function updateStraightLineAndDistance() {
     line.attr("d", path({
       type: "LineString",
@@ -287,13 +287,13 @@ d3.json(mapUrl).then(function(geoData) {
         .attr("fill", snappedName ? "#ffcc00" : "#ffffff") 
         .attr("font-size", snappedName ? "12px" : "10px"); 
 
-      // 💡 마우스를 끌고 있을 때는 빠르고 가벼운 직선거리를 보여줍니다.
+      // 마우스를 끌고 있을 때는 빠르고 가벼운 직선거리를 보여줍니다.
       updateStraightLineAndDistance(); 
     })
     .on("end", function() {
       d3.select(this).transition().duration(100).attr("r", 5);
 
-      // 💡 [마우스를 놓았을 때] 카카오 API를 호출하여 실제 경로와 주행거리를 가져옵니다!
+      // (마우스를 놓았을 때) 카카오 API를 호출하여 실제 경로와 주행거리를 가져옵니다!
       const origin = `${markers[0].coords[0]},${markers[0].coords[1]}`;
       const destination = `${markers[1].coords[0]},${markers[1].coords[1]}`;
 
@@ -313,7 +313,7 @@ d3.json(mapUrl).then(function(geoData) {
              distanceEl.innerHTML = `${distanceKm}<span style="font-size: 2rem; color: #ff9900;">km (실제주행)</span><br><span style="font-size: 1.5rem; color: #cccccc; font-weight: normal;">약 ${durationMin}분 소요</span>`;
           }
 
-          // 2. 💡 (보너스 기능!) 카카오가 보내준 실제 고속도로 궤적(Polyline)을 지도에 그립니다.
+          // 2. 카카오가 보내준 실제 고속도로 궤적(Polyline)을 지도에 그립니다.
           let realRouteCoords = [];
           data.routes[0].sections[0].roads.forEach(road => {
             for(let i=0; i<road.vertexes.length; i+=2) {
