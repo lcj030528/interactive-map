@@ -40,6 +40,8 @@ const mapUrl = "https://raw.githubusercontent.com/southkorea/southkorea-maps/mas
 
 d3.json(mapUrl).then(function(geoData) {
   
+  d3.json(mapUrl).then(function(geoData) {
+  
   // 1. 지도 그리기
   g.selectAll(".region")
     .data(geoData.features)
