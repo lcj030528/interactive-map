@@ -51,6 +51,32 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("stroke", "#444444")
     .attr("stroke-width", 0.5);
 
+  //1.5 주요 도시 이름 (특별시, 광역시, 특별자치시) 은은하게 깔기
+  const majorCities = [
+    { name: "서울", coords: [126.9780, 37.5665] },
+    { name: "부산", coords: [129.0756, 35.1795] },
+    { name: "대구", coords: [128.6014, 35.8714] },
+    { name: "인천", coords: [126.7052, 37.4562] },
+    { name: "광주", coords: [126.8526, 35.1595] },
+    { name: "대전", coords: [127.3845, 36.3504] },
+    { name: "울산", coords: [129.3113, 35.5383] },
+    { name: "세종", coords: [127.2890, 36.4800] }
+  ];
+
+  g.selectAll(".city-label")
+    .data(majorCities)
+    .enter()
+    .append("text")
+    .attr("class", "city-label")
+    .attr("x", d => projection(d.coords)[0])
+    .attr("y", d => projection(d.coords)[1])
+    .attr("text-anchor", "middle") // 텍스트 정중앙 정렬
+    .attr("fill", "rgba(255, 255, 255, 0.15)") // 배경에 묻히도록 투명도 15% 적용 (워터마크 효과)
+    .attr("font-size", "28px") // 글씨를 큼직하게
+    .attr("font-weight", "900") // 아주 두껍게
+    .style("letter-spacing", "5px") // 자간을 넓혀서 고급스럽게
+    .style("pointer-events", "none") // *글씨가 마우스 클릭이나 드래그를 방해하지 않게 유령 취급
+    .text(d => d.name);
   // 2. 128개 통합 휴게소 데이터
   const restAreas = [
     { "name": "밀양영남루휴게소", "coords": [128.663721, 35.491308] },
