@@ -36,11 +36,9 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-const mapUrl = "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-municipalities-2018-geo.json";
+const mapUrl = "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-provinces-2018-geo.json";
 
 d3.json(mapUrl).then(function(geoData) {
-  
-  d3.json(mapUrl).then(function(geoData) {
   
   // 1. 지도 그리기
   g.selectAll(".region")
@@ -73,8 +71,8 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("x", d => projection(d.coords)[0])
     .attr("y", d => projection(d.coords)[1])
     .attr("text-anchor", "middle") // 텍스트 정중앙 정렬
-    .attr("fill", "rgba(255, 255, 255, 0.15)") // 배경에 묻히도록 투명도 15% 적용 (워터마크 효과)
-    .attr("font-size", "28px") // 글씨를 큼직하게
+    .attr("fill", "rgba(255, 255, 255, 0.3)") // 배경에 묻히도록 투명도 15% 적용 (워터마크 효과)
+    .attr("font-size", "10px") // 글씨를 큼직하게
     .attr("font-weight", "900") // 아주 두껍게
     .style("letter-spacing", "5px") // 자간을 넓혀서 고급스럽게
     .style("pointer-events", "none") // *글씨가 마우스 클릭이나 드래그를 방해하지 않게 유령 취급
@@ -219,7 +217,7 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("class", "rest-area")
     .attr("cx", d => projection(d.coords)[0])
     .attr("cy", d => projection(d.coords)[1])
-    .attr("r", 3) 
+    .attr("r", 1.5) 
     .attr("fill", "#ffffff")
     .attr("opacity", 0.6);
 
@@ -276,7 +274,7 @@ d3.json(mapUrl).then(function(geoData) {
 
   const drag = d3.drag()
     .on("start", function() {
-      d3.select(this).transition().duration(100).attr("r", 5);
+      d3.select(this).transition().duration(100).attr("r", 2);
     })
     .on("drag", function(event, d) {
       let mouseX = event.x;
@@ -319,7 +317,7 @@ d3.json(mapUrl).then(function(geoData) {
       updateStraightLineAndDistance(); 
     })
     .on("end", function() {
-      d3.select(this).transition().duration(100).attr("r", 5);
+      d3.select(this).transition().duration(100).attr("r", 2);
 
       // (마우스를 놓았을 때) 카카오 API를 호출하여 실제 경로와 주행거리를 가져옵니다!
       const origin = `${markers[0].coords[0]},${markers[0].coords[1]}`;
@@ -369,7 +367,7 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("class", "marker")
     .attr("cx", d => projection(d.coords)[0]) 
     .attr("cy", d => projection(d.coords)[1]) 
-    .attr("r", 4) // 마커 크기 조절
+    .attr("r", 2) // 마커 크기 조절
     .attr("fill", d => d.color)
     .attr("stroke", "#ffffff")
     .attr("stroke-width", 2.5)
