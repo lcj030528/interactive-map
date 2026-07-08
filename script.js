@@ -1,8 +1,10 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
+// canvas 폭 넓이 설정 / 화면 제한
 const width = window.innerWidth;
 const height = window.innerHeight;
 
+//
 const svg = d3.select("body").append("svg")
   .attr("width", width)
   .attr("height", height)
