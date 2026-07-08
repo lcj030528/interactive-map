@@ -1,10 +1,10 @@
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-// canvas 폭 넓이 설정 / 화면 제한
+// canvas 폭 넓이 설정 / 화면 제한 / 동적으로 움직이며 사용자에 화면에 맞춰 제공
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-//
+// 변수 웹상에 화면 설정
 const svg = d3.select("body").append("svg")
   .attr("width", width)
   .attr("height", height)
@@ -12,18 +12,21 @@ const svg = d3.select("body").append("svg")
 
 const g = svg.append("g");
 
+// 네모난 세계지도 투영시키기
 const projection = d3.geoMercator()
-  .center([127.5, 35.9])
-  .scale(3000) 
-  .translate([width / 2, height / 2]);
+  .center([127.5, 35.9])  //초점 한국으로 맞춤
+  .scale(3000) //렌즈 확대
+  .translate([width / 2, height / 2]); //한국에 중심 맞추기
 
 const path = d3.geoPath().projection(projection);
 
+// 줌인 줌아웃 범위 저
 const zoom = d3.zoom()
   .scaleExtent([1, 10]) 
   .on("zoom", (event) => {
     g.attr("transform", event.transform); 
   });
+// d3에 내제된 인풋 시스템 작동 휠 더블클릭 좌클릭 등등 
 svg.call(zoom);
 
 // 하버사인 직선거리 공식
@@ -38,6 +41,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// 시 도 군 version 지도맵 
 const mapUrl = "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-provinces-2018-geo.json";
 
 d3.json(mapUrl).then(function(geoData) {
@@ -56,12 +60,12 @@ d3.json(mapUrl).then(function(geoData) {
   //1.5 주요 도시 이름 (특별시, 광역시, 특별자치시) 은은하게 깔기
   const majorCities = [
     { name: "서울", coords: [126.9780, 37.5665] },
-    { name: "부산", coords: [129.0756, 35.1795] },
+    { name: "대전", coords: [127.3845, 36.3504] },
     { name: "대구", coords: [128.6014, 35.8714] },
+    { name: "부산", coords: [129.0756, 35.1795] },
+    { name: "울산", coords: [129.3113, 35.5383] },
     { name: "인천", coords: [126.7052, 37.4562] },
     { name: "광주", coords: [126.8526, 35.1595] },
-    { name: "대전", coords: [127.3845, 36.3504] },
-    { name: "울산", coords: [129.3113, 35.5383] },
     { name: "세종", coords: [127.2890, 36.4800] }
   ];
 
@@ -73,12 +77,13 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("x", d => projection(d.coords)[0])
     .attr("y", d => projection(d.coords)[1])
     .attr("text-anchor", "middle") // 텍스트 정중앙 정렬
-    .attr("fill", "rgba(255, 255, 255, 0.3)") // 배경에 묻히도록 투명도 15% 적용 (워터마크 효과)
-    .attr("font-size", "10px") // 글씨를 큼직하게
-    .attr("font-weight", "900") // 아주 두껍게
-    .style("letter-spacing", "5px") // 자간을 넓혀서 고급스럽게
+    .attr("fill", "rgba(255, 255, 255, 0.3)") // 배경에 묻히도록 투명도 적용 
+    .attr("font-size", "10px") // 글씨 조절
+    .attr("font-weight", "900") 
+    .style("letter-spacing", "5px") 
     .style("pointer-events", "none") // *글씨가 마우스 클릭이나 드래그를 방해하지 않게 유령 취급
     .text(d => d.name);
+  
   // 2. 128개 통합 휴게소 데이터
   const restAreas = [
     { "name": "밀양영남루휴게소", "coords": [128.663721, 35.491308] },
@@ -219,8 +224,8 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("class", "rest-area")
     .attr("cx", d => projection(d.coords)[0])
     .attr("cy", d => projection(d.coords)[1])
-    .attr("r", 1.5) 
-    .attr("fill", "#ffffff")
+    .attr("r", 1.5) //반지름 
+    .attr("fill", "#ffffff")  //흰색
     .attr("opacity", 0.6);
 
   // 4. 출발지, 도착지 마커 세팅
@@ -266,10 +271,10 @@ d3.json(mapUrl).then(function(geoData) {
     .attr("text-anchor", "middle")
     .attr("fill", "#ffffff")
     .attr("font-size", "10px")
-    .attr("font-weight", "bold")
-    .style("pointer-events", "none") 
-    .style("text-shadow", "0px 0px 5px rgba(0,0,0,0.8)")
-    .text(d => d.name);
+    .attr("font-weight", "bold") // 글씨를 두껍게
+    .style("pointer-events", "none")  // 글씨를 마우스로 클릭할 수 없게 만
+    .style("text-shadow", "0px 0px 5px rgba(0,0,0,0.8)") //글자 뒤 까만 그림
+    .text(d => d.name); //데이터에서 이름 꺼내라
 
   // 7. 자석 효과 및 카카오 API 호출 로직
   const KAKAO_REST_KEY = "22f50d3ec25b2fa93ccf676fbd8cdb35"; 
