@@ -279,11 +279,11 @@ d3.json(mapUrl).then(function(geoData) {
   // 7. 자석 효과 및 카카오 API 호출 로직
   const KAKAO_REST_KEY = "22f50d3ec25b2fa93ccf676fbd8cdb35"; 
 
-  const drag = d3.drag()
-    .on("start", function() {
-      d3.select(this).transition().duration(100).attr("r", 2);
+  const drag = d3.drag() //d3에서 drag메서드 가져와서 쓸때는 drag라는 이름으로 쓰라고
+    .on("start", function() {  //기능을 시작한다
+      d3.select(this).transition().duration(100).attr("r", 2);  //this = 128개 데이터 중 내가 클릭한 데이터 
     })
-    .on("drag", function(event, d) {
+    .on("drag", function(event, d) {  // d= data
       let mouseX = event.x;
       let mouseY = event.y;
       
@@ -291,8 +291,8 @@ d3.json(mapUrl).then(function(geoData) {
       let closestRestArea = null;
 
       restAreas.forEach(ra => {
-        const [raX, raY] = projection(ra.coords);
-        const dist = Math.sqrt(Math.pow(mouseX - raX, 2) + Math.pow(mouseY - raY, 2));
+        const [raX, raY] = projection(ra.coords);  //투영좌표 
+        const dist = Math.sqrt(Math.pow(mouseX - raX, 2) + Math.pow(mouseY - raY, 2));  //두 점 사이의 거리 
         if(dist < minDistance) {
           minDistance = dist;
           closestRestArea = ra;
@@ -301,24 +301,26 @@ d3.json(mapUrl).then(function(geoData) {
 
       let snappedName = "";
       
-      if (minDistance < 20) {
-        const [snapX, snapY] = projection(closestRestArea.coords);
+      if (minDistance < 20) {  //휴게소 반경 20 안에 들어 오
+        const [snapX, snapY] = projection(closestRestArea.coords); //강제로 휴게소 중앙에 좌표 넣기
         mouseX = snapX;
         mouseY = snapY;
-        d.coords = [...closestRestArea.coords]; 
-        snappedName = closestRestArea.name; 
+        d.coords = [...closestRestArea.coords]; // 데이터 상의 좌표를 휴게소의 위경도 좌표로 뒤집어써라.
+       //... = 스프레드 연산자 / 아무것도 없는 [] 하나를 만들고 그 안에 원본의 위경도 좌표만 복사해서 넣기 
+       //d.coords = [closestRestArea.coords]; 로 사용 시 원본 데이터를 그대로 바라보고 사용하기 때문에 만약 내 마커 좌표를 수정한다고 할 때 원본데이터도 바뀌는 일이 일어날 수 있음. 
+        snappedName = closestRestArea.name; //빈칸에 휴게소 이름 
       } else {
-        d.coords = projection.invert([mouseX, mouseY]);
+        d.coords = projection.invert([mouseX, mouseY]); // 그게 아니면 마우스로 계속 진행 
       }
 
       d3.select(this).attr("cx", mouseX).attr("cy", mouseY);
 
-      markerLabels.filter(label => label.id === d.id)
-        .attr("x", mouseX)
-        .attr("y", mouseY - 25)
-        .text(snappedName ? `${d.name} : ${snappedName}` : d.name) 
-        .attr("fill", snappedName ? "#ffcc00" : "#ffffff") 
-        .attr("font-size", snappedName ? "12px" : "10px"); 
+      markerLabels.filter(label => label.id === d.id)  //휴게소 데이터중 내가 찍은 데이터와 동일한 데이터를 찾아라
+        .attr("x", mouseX) 
+        .attr("y", mouseY - 25) // x, y좌표 동일하게 가져오는데 y는 시야 가리지 않게 25 내리
+        .text(snappedName ? `${d.name} : ${snappedName}` : d.name) //자석으로 붙었으면 붙은 이름 아니면 그 전 이름 
+        .attr("fill", snappedName ? "#ffcc00" : "#ffffff") /// 색깔도 동일
+        .attr("font-size", snappedName ? "12px" : "10px"); //휴게소 이름이 바뀌면 12 아니면 10
 
       // 마우스를 끌고 있을 때는 빠르고 가벼운 직선거리를 보여줍니다.
       updateStraightLineAndDistance(); 
@@ -326,14 +328,14 @@ d3.json(mapUrl).then(function(geoData) {
     .on("end", function() {
       d3.select(this).transition().duration(100).attr("r", 2);
 
-      // (마우스를 놓았을 때) 카카오 API를 호출하여 실제 경로와 주행거리를 가져옵니다!
+      // (마우스를 놓았을 때) 카카오 API를 호출하여 실제 경로와 주행거리를 가져온다
       const origin = `${markers[0].coords[0]},${markers[0].coords[1]}`;
       const destination = `${markers[1].coords[0]},${markers[1].coords[1]}`;
 
       fetch(`https://apis-navi.kakaomobility.com/v1/directions?origin=${origin}&destination=${destination}`, {
         method: "GET",
         headers: { "Authorization": `KakaoAK ${KAKAO_REST_KEY}` }
-      })
+      })  //키로 연동하여 카카오모빌리티에서 목적지를 찾는다 
       .then(response => response.json())
       .then(data => {
         if(data.routes && data.routes[0]) {
@@ -343,7 +345,7 @@ d3.json(mapUrl).then(function(geoData) {
 
           const distanceEl = document.getElementById("distance");
           if(distanceEl) {
-             distanceEl.innerHTML = `${distanceKm}<span style="font-size: 2rem; color: #ff9900;">km (실제주행)</span><br><span style="font-size: 1.5rem; color: #cccccc; font-weight: normal;">약 ${durationMin}분 소요</span>`;
+             distanceEl.innerHTML = `${distanceKm}<span style="font-size: 2rem; color: #ff9900;">km (실제주행)</span><br><span style="font-size: 1.5rem; color: #ff0000; font-weight: normal;">약 ${durationMin}분 소요</span>`;
           }
 
           // 2. 카카오가 보내준 실제 고속도로 궤적(Polyline)을 지도에 그립니다.
@@ -360,7 +362,7 @@ d3.json(mapUrl).then(function(geoData) {
             coordinates: realRouteCoords
           }))
           .attr("stroke-dasharray", "none") // 점선 제거 (실선)
-          .attr("stroke", "#ffcc00"); // 노란색으로 하이라이트
+          .attr("stroke", "#00ffff"); // 노란색으로 하이라이트
         }
       })
       .catch(error => console.log("길찾기 에러:", error));
